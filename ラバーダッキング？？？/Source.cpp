@@ -7,28 +7,67 @@
 
 #include <conio.h>//not standard.
 
-#include "StopWatch_II.h"
+//#include "StopWatch_II.h"
 
 //https://twitter.com/vitaone_/status/845954013103239168
 
-bool ShowProgress(const std::string& Title, std::uintmax_t L, const std::string& Token,unsigned int S=0) {
 
-	std::uniform_int_distribution<> TL(16, 1500);
-	std::uniform_int_distribution<> OL(16, 16*5);
-	std::mt19937 mt;
+//#include <chrono>
 
+class StopWatch {
+	std::chrono::high_resolution_clock::time_point S;
+	std::chrono::high_resolution_clock::time_point E;
+public:
 
+	typedef std::chrono::milliseconds TimeType;
+
+	StopWatch() { Start(); };
+
+	bool Start() {
+		S = E = std::chrono::high_resolution_clock::now();
+		return true;
+	}
+	bool ReStart() {
+		return Start();
+	}
+	bool Stop() {
+		E = std::chrono::high_resolution_clock::now();
+		return true;
+	}
+
+	bool Reset() {
+		S = E = std::chrono::high_resolution_clock::now();
+		return true;
+	}
+	template<class T = TimeType>
+	T Ellipse() {
+		return std::chrono::duration_cast<T>(std::chrono::high_resolution_clock::now() - S);
+	}
+	template<class T = TimeType>
+	T Result() {
+		return std::chrono::duration_cast<T>(E - S);
+	}
+
+};
+
+bool ShowProgress(const std::string& Title, std::uintmax_t L, const std::string& Token) {
+
+	std::uniform_int_distribution<> TL(16, 3500);
+	std::uniform_int_distribution<> OL(0, 16*3);
+	std::random_device rd;
+
+	std::size_t GC = 0;
 	StopWatch SW;
 		std::cout << Title << ':';
 	for (std::uintmax_t i = 0; i < L; i++) {
-		std::chrono::milliseconds ms(TL(mt));
+		std::chrono::milliseconds ms(TL(rd));
 		SW.Start();
 		std::cout << ' ';
-		std::size_t GC = 0;
+		
 		while (ms >= SW.Ellipse<>()) {
 			std::cout <<(char)8<< Token[GC++];
 			GC %= Token.size();
-			std::this_thread::sleep_for(std::chrono::milliseconds(OL(mt)));
+			std::this_thread::sleep_for(std::chrono::milliseconds(OL(rd)));
 
 			if (_kbhit()) { if (_getch() == 27) { std::cout << "--->> Aborted!" << std::endl; goto L;}  }
 		}
@@ -38,6 +77,8 @@ bool ShowProgress(const std::string& Title, std::uintmax_t L, const std::string&
 	std::cout << " --->> Task End?" << std::endl;
 
 	L:
+
+	std::cin.clear();
 
 	return true;
 }
@@ -60,7 +101,7 @@ int main() {
 
 	std::random_device rd;
 	std::uniform_int_distribution<> ui(7, 70);
-	std::mt19937 mt(rd());
+	//std::mt19937 mt(rd());
 	std::string T;
 	int key = 0;
 	do {
@@ -68,11 +109,13 @@ int main() {
 		std::cin >> T;
 		std::cin.clear();
 
-		std::cout << "Let's Start!" << std::endl;
+		std::cout << "Let's Think!!" << std::endl;
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(2750));
 
-		ShowProgress(T, ui(mt), " -\|/*",mt());
+		std::cout << std::endl;
+		
+		ShowProgress(T, ui(rd), " -\|/*");
 		std::cout << std::endl;
 		std::cout << "You Have next Task?(y/n)";
 
@@ -81,7 +124,6 @@ int main() {
 
 	} while (key == 'y');
 	
-	std::cout << std::endl;
 	std::cout << std::endl;
 	std::cout << "complete this time." << std::endl;
 
