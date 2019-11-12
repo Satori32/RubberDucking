@@ -7,48 +7,10 @@
 
 #include <conio.h>//not standard.
 
-//#include "StopWatch_II.h"
+#include "StopWatch_II.h"
 
 //https://twitter.com/vitaone_/status/845954013103239168
 
-
-//#include <chrono>
-
-class StopWatch {
-	std::chrono::high_resolution_clock::time_point S;
-	std::chrono::high_resolution_clock::time_point E;
-public:
-
-	typedef std::chrono::milliseconds TimeType;
-
-	StopWatch() { Start(); };
-
-	bool Start() {
-		S = E = std::chrono::high_resolution_clock::now();
-		return true;
-	}
-	bool ReStart() {
-		return Start();
-	}
-	bool Stop() {
-		E = std::chrono::high_resolution_clock::now();
-		return true;
-	}
-
-	bool Reset() {
-		S = E = std::chrono::high_resolution_clock::now();
-		return true;
-	}
-	template<class T = TimeType>
-	T Ellipse() {
-		return std::chrono::duration_cast<T>(std::chrono::high_resolution_clock::now() - S);
-	}
-	template<class T = TimeType>
-	T Result() {
-		return std::chrono::duration_cast<T>(E - S);
-	}
-
-};
 
 bool ShowProgress(const std::string& Title, std::uintmax_t L, const std::string& Token) {
 
